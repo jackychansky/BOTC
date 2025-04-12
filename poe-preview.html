@@ -1,0 +1,267 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Information</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+    header {
+      background-color: #4caf50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #4caf50;
+      margin-bottom: 1rem;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .seating-plan-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .circle {
+      position: relative;
+      margin: 2rem auto;
+      width: 300px;
+      height: 300px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffffff, #f9f9f9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .seat {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 50%;
+      background-color: #4caf50;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+    .seat:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .seat-number {
+      font-size: 10px;
+      font-weight: bold;
+      color: #ffd700; /* Gold color for seat numbers */
+      margin-bottom: 2px;
+    }
+    @media (max-width: 600px) {
+      .circle {
+        width: 240px;
+        height: 240px;
+      }
+      .seat {
+        width: 50px;
+        height: 50px;
+        font-size: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Blood on the Clocktower Event</h1>
+  </header>
+  <div class="container">
+    <!-- Event Details Section -->
+    <div class="section" id="eventDetails">
+      <h2>Event Details</h2>
+      <label><strong>Date:</strong></label>
+      <input type="date" id="eventDate">
+      <label><strong>Starting Time:</strong></label>
+      <input type="time" id="startTime">
+      <label><strong>Ending Time:</strong></label>
+      <input type="time" id="endTime">
+      <label><strong>Venue:</strong></label>
+      <input type="text" id="eventVenue" placeholder="Enter venue (e.g., Central Park, NY)" onchange="generateGoogleMapsLink()">
+      <p id="venueLink" style="margin-top: 10px;"><a href="#" target="_blank" id="googleMapsLink" style="display: none;">View on Google Maps</a></p>
+      <label><strong>Fee:</strong></label>
+      <input type="text" id="eventFee" placeholder="Enter event fee">
+    </div>
+
+    <!-- Script Link Section -->
+    <div class="section" id="scriptSection">
+      <h2>Script</h2>
+      <label>Script Link:</label>
+      <input type="text" id="scriptLink" placeholder="Enter script link">
+    </div>
+
+    <!-- References Section -->
+    <div class="section" id="referencesSection">
+      <h2>References</h2>
+      <label>Reference Links (one per line):</label>
+      <textarea id="references" placeholder="Enter reference links, one per line"></textarea>
+    </div>
+
+    <!-- Seating Plan Section -->
+    <div class="section" id="seatingPlanSection">
+      <h2>Seating Plan</h2>
+      <label>Player Names (one per line):</label>
+      <textarea id="playerNames" placeholder="Enter player names, one per line"></textarea>
+      <button onclick="randomizeSeatingPlan()">Randomize Seats</button>
+      <div class="seating-plan-container" id="seatingPlanContainer">
+        <div class="circle" id="seatingPlan">
+          <p style="color: #888; font-size: 14px;">Players will appear here</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Button -->
+    <button onclick="exportPage()">Export Page</button>
+  </div>
+
+  <script>
+    // Generate Google Maps link for the venue
+    function generateGoogleMapsLink() {
+      const venue = document.getElementById("eventVenue").value.trim();
+      const venueLink = document.getElementById("googleMapsLink");
+      if (venue) {
+        venueLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue)}`;
+        venueLink.textContent = `View "${venue}" on Google Maps`;
+        venueLink.style.display = "inline";
+      } else {
+        venueLink.style.display = "none";
+      }
+    }
+
+    // Randomize seating plan function
+    function randomizeSeatingPlan() {
+      const seatingPlanContainer = document.getElementById("seatingPlanContainer");
+      const seatingPlan = document.getElementById("seatingPlan");
+      const playerNamesInput = document.getElementById("playerNames").value.trim();
+
+      if (!playerNamesInput) {
+        alert("Please enter player names.");
+        return;
+      }
+
+      const playerNames = playerNamesInput.split("\n").map(name => name.trim()).filter(name => name !== "");
+      const playerCount = playerNames.length;
+
+      if (playerCount < 3 || playerCount > 20) {
+        alert("Please enter between 3 and 20 players.");
+        return;
+      }
+
+      // Shuffle player names randomly
+      const shuffledNames = [...playerNames].sort(() => Math.random() - 0.5);
+
+      // Clear previous seating plan
+      seatingPlan.innerHTML = "";
+      seatingPlanContainer.classList.remove("hidden");
+
+      const radius = 140; // Circle radius
+      const angleStep = (2 * Math.PI) / playerCount; // Angle between seats
+      const startAngle = Math.PI / 2; // Start angle for Seat 1 (6 o'clock)
+
+      // Generate seats
+      for (let i = 0; i < playerCount; i++) {
+        const angle = startAngle + i * angleStep;
+        const x = radius * Math.cos(angle) + radius; // X position
+        const y = radius * Math.sin(angle) + radius; // Y position
+
+        // Create a seat
+        const seat = document.createElement("div");
+        seat.className = "seat";
+        seat.style.left = `${x}px`;
+        seat.style.top = `${y}px`;
+
+        // Add seat number
+        const seatNumber = document.createElement("div");
+        seatNumber.className = "seat-number";
+        seatNumber.textContent = `Seat ${i + 1}`;
+
+        // Add player name
+        const playerName = document.createElement("div");
+        playerName.textContent = shuffledNames[i];
+
+        // Append seat number and player name
+        seat.appendChild(seatNumber);
+        seat.appendChild(playerName);
+
+        seatingPlan.appendChild(seat);
+      }
+    }
+
+    // Export page function
+    function exportPage() {
+      const eventDetails = document.getElementById("eventDetails");
+      const scriptSection = document.getElementById("scriptSection");
+      const referencesSection = document.getElementById("referencesSection");
+
+      // Replace inputs with static content
+      eventDetails.innerHTML = `
+        <h2>Event Details</h2>
+        <p><strong>Date:</strong> ${document.getElementById("eventDate").value}</p>
+        <p><strong>Starting Time:</strong> ${document.getElementById("startTime").value}</p>
+        <p><strong>Ending Time:</strong> ${document.getElementById("endTime").value}</p>
+        <p><strong>Venue:</strong> <a href="${document.getElementById("googleMapsLink").href}" target="_blank">${document.getElementById("eventVenue").value}</a></p>
+        <p><strong>Fee:</strong> ${document.getElementById("eventFee").value}</p>
+      `;
+
+      scriptSection.innerHTML = `
+        <h2>Script</h2>
+        <p>You can access the script here: <a href="${document.getElementById("scriptLink").value}" target="_blank">${document.getElementById("scriptLink").value}</a></p>
+      `;
+
+      const references = document.getElementById("references").value.trim().split("\n").map(ref => `<li><a href="${ref.trim()}" target="_blank">${ref.trim()}</a></li>`).join("");
+      referencesSection.innerHTML = `
+        <h2>References</h2>
+        <ul>${references}</ul>
+      `;
+    }
+  </script>
+
+
+</body></html>
